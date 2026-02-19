@@ -1,1 +1,30 @@
-# Implementation Plan: Configure basic log aggregation for local Docker containers\n\n## Phase 1: Environment Readiness\n\n- [ ] Task: Validate current Docker and Loki configuration\n    - [ ] Ensure `docker-compose.yml` correctly defines Loki, Promtail, and Grafana services.\n    - [ ] Verify Loki and Grafana can start successfully with existing configs.\n- [ ] Task: Conductor - User Manual Verification 'Environment Readiness' (Protocol in workflow.md)\n\n## Phase 2: Promtail Configuration\n\n- [ ] Task: Update Promtail configuration for Docker log discovery\n    - [ ] Configure `promtail-config.yml` with `docker_sd_configs` for local container discovery.\n    - [ ] Define relabeling rules to include container names and image IDs as labels.\n- [ ] Task: Conductor - User Manual Verification 'Promtail Configuration' (Protocol in workflow.md)\n\n## Phase 3: Loki & Grafana Integration\n\n- [ ] Task: Verify Loki ingestion and Grafana connectivity\n    - [ ] Confirm Promtail is successfully pushing logs to Loki.\n    - [ ] Ensure Grafana is configured with Loki as a datasource.\n- [ ] Task: Conductor - User Manual Verification 'Loki & Grafana Integration' (Protocol in workflow.md)\n\n## Phase 4: Final Validation & Documentation\n\n- [ ] Task: Create a basic Grafana dashboard for Docker logs\n    - [ ] Build a simple dashboard to query and display logs filtered by container label.\n- [ ] Task: Update README with setup instructions\n    - [ ] Document how to start the stack and view logs in Grafana.\n- [ ] Task: Conductor - User Manual Verification 'Final Validation & Documentation' (Protocol in workflow.md)
+# Implementation Plan: Configure basic log aggregation for local Docker containers
+
+## Phase 1: Environment Readiness
+
+- [x] Task: Validate current Docker and Loki configuration [1001789]
+    - [ ] Ensure `docker-compose.yml` correctly defines Loki, Promtail, and Grafana services.
+    - [ ] Verify Loki and Grafana can start successfully with existing configs.
+- [ ] Task: Conductor - User Manual Verification 'Environment Readiness' (Protocol in workflow.md)
+
+## Phase 2: Promtail Configuration
+
+- [ ] Task: Update Promtail configuration for Docker log discovery
+    - [ ] Configure `promtail-config.yml` with `docker_sd_configs` for local container discovery.
+    - [ ] Define relabeling rules to include container names and image IDs as labels.
+- [ ] Task: Conductor - User Manual Verification 'Promtail Configuration' (Protocol in workflow.md)
+
+## Phase 3: Loki & Grafana Integration
+
+- [ ] Task: Verify Loki ingestion and Grafana connectivity
+    - [ ] Confirm Promtail is successfully pushing logs to Loki.
+    - [ ] Ensure Grafana is configured with Loki as a datasource.
+- [ ] Task: Conductor - User Manual Verification 'Loki & Grafana Integration' (Protocol in workflow.md)
+
+## Phase 4: Final Validation & Documentation
+
+- [ ] Task: Create a basic Grafana dashboard for Docker logs
+    - [ ] Build a simple dashboard to query and display logs filtered by container label.
+- [ ] Task: Update README with setup instructions
+    - [ ] Document how to start the stack and view logs in Grafana.
+- [ ] Task: Conductor - User Manual Verification 'Final Validation & Documentation' (Protocol in workflow.md)
