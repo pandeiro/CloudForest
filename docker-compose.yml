@@ -51,6 +51,8 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=changeme-now
+      - GF_FEATURE_TOGGLES_ENABLE=grafanaconThemes
+      - GF_USERS_DEFAULT_THEME=desert-bloom
     volumes:
       - ./loki.yaml:/etc/grafana/provisioning/datasources/loki.yaml:ro
       - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
