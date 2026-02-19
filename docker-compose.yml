@@ -57,12 +57,5 @@ services:
       - ./dashboards:/etc/grafana/provisioning/dashboards/json:ro
     restart: unless-stopped
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    labels:
-      - "logging=enabled"
-    restart: unless-stopped
-
 volumes:
   loki-data:

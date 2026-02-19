@@ -6,7 +6,7 @@ This file contains useful queries for troubleshooting and monitoring the system.
 
 ### View all logs for a specific container
 ```logql
-{job="docker", container="/nginx"}
+{job="docker", container="/loki"}
 ```
 
 ### Search for errors in all container logs
