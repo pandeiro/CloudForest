@@ -22,10 +22,10 @@
     - [x] Ensure Grafana is provisioned with Loki as a datasource.
 - [x] Task: Conductor - User Manual Verification 'Loki & Grafana Integration' (Protocol in workflow.md)
 
-## Phase 4: Final Validation & Documentation
+## Phase 4: Final Validation & Documentation [checkpoint: 4b6fd7c]
 
 - [x] Task: Create a basic Grafana dashboard for Docker logs [ac50b9c]
     - [ ] Build a simple dashboard to query and display logs filtered by container label.
 - [x] Task: Update README with setup instructions [262c72a]
     - [ ] Document how to start the stack and view logs in Grafana.
-- [~] Task: Conductor - User Manual Verification 'Final Validation & Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Final Validation & Documentation' (Protocol in workflow.md)
