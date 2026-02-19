@@ -1,12 +1,12 @@
 # Implementation Plan: VPS Deployment, System Monitoring, and Documentation
 
-## Phase 1: Deployment & CI/CD [checkpoint: ]
+## Phase 1: Deployment & CI/CD [checkpoint: efbf2aa]
 
 - [x] Task: Create GitHub Actions workflow for SSH-based deployment [8a75244]
     - [ ] Create `.github/workflows/deploy.yml` with `appleboy/ssh-action`.
     - [ ] Define environment secrets (SSH host, key, user).
     - [ ] Configure the action to sync the repository and restart the stack.
-- [ ] Task: Conductor - User Manual Verification 'Deployment & CI/CD' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Deployment & CI/CD' (Protocol in workflow.md)
 
 ## Phase 2: Enhanced Monitoring & Conditional Logging [checkpoint: ]
 
