@@ -14,7 +14,7 @@ A production-ready log aggregation and system monitoring pipeline using **Loki A
 ```bash
 docker compose up -d
 ```
-- **Grafana:** `http://localhost:3000` (admin/changeme-now)
+- **Grafana:** `http://localhost:3000` (admin/`${GRAFANA_PASSWORD:-changeme-now}`)
 - **Prometheus:** `http://localhost:9090`
 - **Alloy UI:** `http://localhost:12345`
 

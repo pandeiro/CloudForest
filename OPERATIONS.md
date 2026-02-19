@@ -14,6 +14,7 @@ You must configure the following secrets in your GitHub repository (**Settings >
 - `DEPLOY_USER`: The SSH username (e.g., `root` or `ubuntu`).
 - `DEPLOY_KEY`: Your private SSH key (must have access to the VPS).
 - `DEPLOY_PATH`: (Optional) The absolute path on the VPS where the project should reside (defaults to `/opt/cloudforest`).
+- `GRAFANA_PASSWORD`: (Optional) The admin password for Grafana (defaults to `changeme-now`).
 
 ### VPS Setup Requirements
 
