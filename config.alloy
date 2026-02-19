@@ -24,9 +24,22 @@ discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
 }
 
-discovery.relabel "logging_filter" {
+discovery.relabel "docker_filter" {
   targets = discovery.docker.containers.targets
 
+  // Extract container name
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    target_label  = "container"
+  }
+
+  // Extract image
+  rule {
+    source_labels = ["__meta_docker_container_image"]
+    target_label  = "image"
+  }
+
+  // Filter for logging=enabled
   rule {
     source_labels = ["__meta_docker_container_label_logging"]
     regex         = "enabled"
@@ -36,13 +49,11 @@ discovery.relabel "logging_filter" {
 
 loki.source.docker "docker_logs" {
   host       = "unix:///var/run/docker.sock"
-  targets    = discovery.relabel.logging_filter.targets
+  targets    = discovery.relabel.docker_filter.output
   forward_to = [loki.process.add_labels.receiver]
 }
 
 loki.process "add_labels" {
-  stage.docker { }
-  
   stage.static_labels {
     values = {
       job = "docker",
