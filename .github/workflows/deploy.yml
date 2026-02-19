@@ -19,10 +19,10 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            # Set deployment path (default to ~/logging if not provided)
+            # Set deployment path (default to /opt/cloudforest if not provided)
             DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
             if [ -z "$DEPLOY_PATH" ]; then
-              DEPLOY_PATH="~/logging"
+              DEPLOY_PATH="/opt/cloudforest"
             fi
             
             # Navigate to the project directory

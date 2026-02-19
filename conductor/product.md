@@ -1,6 +1,6 @@
-# Initial Concept
+# CloudForest
 
-A setup for dockerized log aggregation and querying
+A robust setup for dockerized log aggregation, system monitoring, and real-time querying.
 
 # Vision
 Provide a robust and scalable log aggregation system that empowers developers to debug and monitor their containerized applications in real-time with minimal overhead.

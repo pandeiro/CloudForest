@@ -1,6 +1,6 @@
-# Operations Guide
+# CloudForest: Operations Guide
 
-This document covers the deployment and maintenance of the logging and monitoring stack on a VPS.
+This document covers the deployment and maintenance of the CloudForest logging and monitoring stack on a VPS.
 
 ## Deployment via GitHub Actions
 
@@ -13,7 +13,7 @@ You must configure the following secrets in your GitHub repository (**Settings >
 - `DEPLOY_HOST`: The IP address or hostname of your VPS.
 - `DEPLOY_USER`: The SSH username (e.g., `root` or `ubuntu`).
 - `DEPLOY_KEY`: Your private SSH key (must have access to the VPS).
-- `DEPLOY_PATH`: (Optional) The absolute path on the VPS where the project should reside (defaults to `~/logging`).
+- `DEPLOY_PATH`: (Optional) The absolute path on the VPS where the project should reside (defaults to `/opt/cloudforest`).
 
 ### VPS Setup Requirements
 

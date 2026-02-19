@@ -1,4 +1,4 @@
-# Docker Log & Metrics Aggregation Pipeline
+# CloudForest: Docker Log & Metrics Aggregation Pipeline
 
 A production-ready log aggregation and system monitoring pipeline using **Loki Alloy**, **Loki**, **Prometheus**, and **Grafana**.
 
