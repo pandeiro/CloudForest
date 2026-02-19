@@ -8,13 +8,13 @@
     - [ ] Configure the action to sync the repository and restart the stack.
 - [x] Task: Conductor - User Manual Verification 'Deployment & CI/CD' (Protocol in workflow.md)
 
-## Phase 2: Enhanced Monitoring & Conditional Logging [checkpoint: ]
+## Phase 2: Enhanced Monitoring & Conditional Logging [checkpoint: 2924798]
 
 - [x] Task: Update Alloy configuration for host metrics and conditional Docker logs [cce6816]
     - [ ] Add `prometheus.exporter.unix` (or similar) to `config.alloy` for host monitoring.
     - [ ] Update `discovery.docker` to filter for containers with `logging=enabled`.
     - [ ] Ensure Nginx access/error logs are explicitly scraped.
-- [ ] Task: Conductor - User Manual Verification 'Enhanced Monitoring & Conditional Logging' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Enhanced Monitoring & Conditional Logging' (Protocol in workflow.md)
 
 ## Phase 3: Visualization & Query Persistence [checkpoint: ]
 
