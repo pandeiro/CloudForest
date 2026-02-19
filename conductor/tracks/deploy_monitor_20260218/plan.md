@@ -16,7 +16,7 @@
     - [ ] Ensure Nginx access/error logs are explicitly scraped.
 - [x] Task: Conductor - User Manual Verification 'Enhanced Monitoring & Conditional Logging' (Protocol in workflow.md)
 
-## Phase 3: Visualization & Query Persistence [checkpoint: ]
+## Phase 3: Visualization & Query Persistence [checkpoint: 624e464]
 
 - [x] Task: Provision host metrics and enhanced Docker logs dashboards [f4f32f4]
     - [ ] Create `dashboards/host-metrics.json` for CPU, Mem, Disk.
@@ -24,7 +24,7 @@
     - [ ] Update `dashboards.yaml` to provision these new dashboards.
 - [x] Task: Create a Query Library (`QUERIES.md`) [f4f32f4]
     - [ ] Document common LogQL queries for Nginx, host metrics, and container logs.
-- [ ] Task: Conductor - User Manual Verification 'Visualization & Query Persistence' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Visualization & Query Persistence' (Protocol in workflow.md)
 
 ## Phase 4: Documentation & Operations [checkpoint: ]
 
