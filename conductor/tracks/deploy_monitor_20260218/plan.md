@@ -10,7 +10,7 @@
 
 ## Phase 2: Enhanced Monitoring & Conditional Logging [checkpoint: ]
 
-- [ ] Task: Update Alloy configuration for host metrics and conditional Docker logs
+- [x] Task: Update Alloy configuration for host metrics and conditional Docker logs [cce6816]
     - [ ] Add `prometheus.exporter.unix` (or similar) to `config.alloy` for host monitoring.
     - [ ] Update `discovery.docker` to filter for containers with `logging=enabled`.
     - [ ] Ensure Nginx access/error logs are explicitly scraped.
