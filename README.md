@@ -1,28 +1,33 @@
-# Docker Log Aggregation Pipeline
+# Docker Log & Metrics Aggregation Pipeline
 
-A foundational log aggregation pipeline using **Loki Alloy**, **Loki**, and **Grafana** to automatically discover and collect logs from local Docker containers.
+A production-ready log aggregation and system monitoring pipeline using **Loki Alloy**, **Loki**, **Prometheus**, and **Grafana**.
 
 ## Architecture
-- **Loki Alloy:** Collects logs from all local Docker containers via the Docker socket (`/var/run/docker.sock`). Platform-agnostic (works on Mac, Linux, and Windows).
+- **Loki Alloy:** Unified agent for log collection (Docker API) and host metrics (Unix exporter).
 - **Loki:** Centralized log storage and indexing.
-- **Grafana:** Visualization and querying.
+- **Prometheus:** High-performance metrics storage.
+- **Grafana:** Centralized visualization for both logs and metrics.
 
 ## Setup & Usage
 
-### 1. Start the Stack
+### 1. Local Development
 ```bash
 docker compose up -d
 ```
+- **Grafana:** `http://localhost:3000` (admin/changeme-now)
+- **Prometheus:** `http://localhost:9090`
+- **Alloy UI:** `http://localhost:12345`
 
-### 2. Access Grafana
-- **URL:** `http://localhost:3000`
-- **User:** `admin`
-- **Password:** `changeme-now`
+### 2. VPS Deployment
+Deployment is automated via GitHub Actions. See [OPERATIONS.md](./OPERATIONS.md) for details.
 
-### 3. View Logs
-- **Option A (Explore):** Go to **Explore**, select the **Loki** datasource, and use the label browser to filter by `container`.
-- **Option B (Dashboard):** Go to **Dashboards** and open the **"Docker Logs Dashboard"**. You can filter logs by container using the template variable at the top.
+## Key Features
+- **Conditional Logging:** Only containers with the label `logging=enabled` are scraped by default.
+- **Host Monitoring:** Real-time metrics for CPU, Memory, Disk, and Network.
+- **Provisioned Dashboards:** Pre-configured "System" dashboards for immediate visibility.
+- **Query Library:** Common LogQL and PromQL queries documented in [QUERIES.md](./QUERIES.md).
 
-## Troubleshooting
-- **No logs in Grafana?** Ensure the `alloy` container is running and has permission to read `/var/run/docker.sock`.
-- **Loki errors?** Check `docker compose logs loki`. Common issues include old logs being rejected (configured to be allowed in `loki-config.yml`).
+## Documentation
+- [OPERATIONS.md](./OPERATIONS.md): VPS setup, secrets management, and deployment.
+- [DEVELOPMENT.md](./DEVELOPMENT.md): Guide for adding new features, logs, or dashboards.
+- [QUERIES.md](./QUERIES.md): Categorized list of useful queries.
