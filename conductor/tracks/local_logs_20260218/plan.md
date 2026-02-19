@@ -9,10 +9,10 @@
 
 ## Phase 2: Promtail Configuration
 
-- [ ] Task: Update Promtail configuration for Docker log discovery
+- [x] Task: Update Promtail configuration for Docker log discovery [090e282]
     - [ ] Configure `promtail-config.yml` with `docker_sd_configs` for local container discovery.
     - [ ] Define relabeling rules to include container names and image IDs as labels.
-- [ ] Task: Conductor - User Manual Verification 'Promtail Configuration' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Promtail Configuration' (Protocol in workflow.md)
 
 ## Phase 3: Loki & Grafana Integration
 
