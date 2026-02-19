@@ -31,6 +31,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=changeme-now
     volumes:
       - ./loki.yaml:/etc/grafana/provisioning/datasources/loki.yaml:ro
+      - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./dashboard.json:/etc/grafana/provisioning/dashboards/json/dashboard.json:ro
     restart: unless-stopped
 
   nginx:
