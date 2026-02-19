@@ -2,7 +2,7 @@
 
 ## Phase 1: Deployment & CI/CD [checkpoint: ]
 
-- [ ] Task: Create GitHub Actions workflow for SSH-based deployment
+- [x] Task: Create GitHub Actions workflow for SSH-based deployment [706eac4]
     - [ ] Create `.github/workflows/deploy.yml` with `appleboy/ssh-action`.
     - [ ] Define environment secrets (SSH host, key, user).
     - [ ] Configure the action to sync the repository and restart the stack.
