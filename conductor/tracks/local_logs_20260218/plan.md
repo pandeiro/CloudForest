@@ -7,12 +7,12 @@
     - [ ] Verify Loki and Grafana can start successfully with existing configs.
 - [x] Task: Conductor - User Manual Verification 'Environment Readiness' (Protocol in workflow.md)
 
-## Phase 2: Promtail Configuration
+## Phase 2: Promtail Configuration [checkpoint: c62f47a]
 
 - [x] Task: Update Promtail configuration for Docker log discovery [090e282]
     - [ ] Configure `promtail-config.yml` with `docker_sd_configs` for local container discovery.
     - [ ] Define relabeling rules to include container names and image IDs as labels.
-- [~] Task: Conductor - User Manual Verification 'Promtail Configuration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Promtail Configuration' (Protocol in workflow.md)
 
 ## Phase 3: Loki & Grafana Integration
 
