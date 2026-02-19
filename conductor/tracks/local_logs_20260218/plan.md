@@ -16,10 +16,10 @@
 
 ## Phase 3: Loki & Grafana Integration
 
-- [ ] Task: Verify Loki ingestion and Grafana connectivity
+- [x] Task: Verify Loki ingestion and Grafana connectivity [b2eb355]
     - [ ] Confirm Promtail is successfully pushing logs to Loki.
     - [ ] Ensure Grafana is configured with Loki as a datasource.
-- [ ] Task: Conductor - User Manual Verification 'Loki & Grafana Integration' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Loki & Grafana Integration' (Protocol in workflow.md)
 
 ## Phase 4: Final Validation & Documentation
 

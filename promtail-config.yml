@@ -9,7 +9,7 @@ clients:
 
 scrape_configs:
 
-  # --- Docker container logs ---
+  # --- Docker container logs (Linux only) ---
   - job_name: docker
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
@@ -24,18 +24,17 @@ scrape_configs:
       - source_labels: [__meta_docker_container_log_path]
         target_label: __path__
 
-  # --- Host nginx access log ---
-  - job_name: nginx-access
-    static_configs:
-      - targets: ['localhost']
-        labels:
-          job: nginx-access
-          __path__: /var/log/nginx/access.log
-
-  # --- Host nginx error log ---
-  - job_name: nginx-error
-    static_configs:
-      - targets: ['localhost']
-        labels:
-          job: nginx-error
-          __path__: /var/log/nginx/error.log
+  # --- Syslog UDP (Cross-platform) ---
+  - job_name: syslog
+    syslog:
+      listen_address: 0.0.0.0:1514
+      protocol: udp
+      idle_timeout: 60s
+      label_structured_data: yes
+      labels:
+        job: syslog
+    relabel_configs:
+      - source_labels: [__syslog_message_hostname]
+        target_label: host
+      - source_labels: [__syslog_message_app_name]
+        target_label: container

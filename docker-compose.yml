@@ -5,32 +5,20 @@ services:
     command: -config.file=/etc/loki/config.yml
     volumes:
       - ./loki-config.yml:/etc/loki/config.yml:ro
-      # Named volume here avoids permissions issues - easier
       - loki-data:/loki
     ports:
       - "3100:3100"
     restart: unless-stopped
 
-  promtail:
-    image: grafana/promtail:latest
-    container_name: promtail
-    command: -config.file=/etc/promtail/config.yml
-    user: root
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/alloy/config.alloy"]
     volumes:
-      - ./promtail-config.yml:/etc/promtail/config.yml:ro
-      - promtail-positions:/tmp/promtail-positions
-
-      # Docker socket
+      - ./config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      # Docker logs live here
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-
-      # Host nginx logs
-      - /var/log/nginx:/var/log/nginx:ro
-
-      # Optional: systemd journal logs
-      - /var/log/journal:/var/log/journal:ro
-
+    ports:
+      - "12345:12345"
     restart: unless-stopped
 
   grafana:
@@ -42,9 +30,13 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=changeme-now
     volumes:
-      - ./grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
+      - ./loki.yaml:/etc/grafana/provisioning/datasources/loki.yaml:ro
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
     restart: unless-stopped
 
 volumes:
   loki-data:
-  promtail-positions:
