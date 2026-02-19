@@ -5,7 +5,7 @@
 - [x] Task: Validate current Docker and Loki configuration [1001789]
     - [ ] Ensure `docker-compose.yml` correctly defines Loki, Promtail, and Grafana services.
     - [ ] Verify Loki and Grafana can start successfully with existing configs.
-- [ ] Task: Conductor - User Manual Verification 'Environment Readiness' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Environment Readiness' (Protocol in workflow.md)
 
 ## Phase 2: Promtail Configuration
 

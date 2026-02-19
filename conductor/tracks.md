@@ -1,1 +1,8 @@
-# Project Tracks\n\nThis file tracks all major tracks for the project. Each track has its own detailed plan in its respective folder.\n\n---\n\n- [ ] **Track: Configure basic log aggregation for local Docker containers.**\n  *Link: [./tracks/local_logs_20260218/](./tracks/local_logs_20260218/)*
+# Project Tracks
+
+This file tracks all major tracks for the project. Each track has its own detailed plan in its respective folder.
+
+---
+
+- [~] **Track: Configure basic log aggregation for local Docker containers.**
+  *Link: [./tracks/local_logs_20260218/](./tracks/local_logs_20260218/)*
