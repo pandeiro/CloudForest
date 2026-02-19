@@ -14,12 +14,13 @@
     - [ ] Define relabeling rules to include container names and image IDs as labels.
 - [x] Task: Conductor - User Manual Verification 'Promtail Configuration' (Protocol in workflow.md)
 
-## Phase 3: Loki & Grafana Integration
+## Phase 3: Loki & Grafana Integration [checkpoint: f9c0395]
 
-- [x] Task: Verify Loki ingestion and Grafana connectivity [b2eb355]
-    - [ ] Confirm Promtail is successfully pushing logs to Loki.
-    - [ ] Ensure Grafana is configured with Loki as a datasource.
-- [~] Task: Conductor - User Manual Verification 'Loki & Grafana Integration' (Protocol in workflow.md)
+- [x] Task: Verify Loki ingestion and Grafana connectivity [f9c0395]
+    - [x] Migrate from Promtail to Loki Alloy for platform-agnostic Docker log collection.
+    - [x] Confirm Loki is successfully receiving logs via the Docker API.
+    - [x] Ensure Grafana is provisioned with Loki as a datasource.
+- [x] Task: Conductor - User Manual Verification 'Loki & Grafana Integration' (Protocol in workflow.md)
 
 ## Phase 4: Final Validation & Documentation
 
