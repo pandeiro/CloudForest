@@ -10,15 +10,37 @@ services:
       - "3100:3100"
     restart: unless-stopped
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/console_templates"
+      - "--web.enable-remote-write-receiver"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
   alloy:
     image: grafana/alloy:latest
     container_name: alloy
     command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/alloy/config.alloy"]
+    user: root
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      # For host metrics
+      - /:/host:ro,rslave
+      # For Nginx logs
+      - /var/log/nginx:/var/log/nginx:ro
     ports:
       - "12345:12345"
+    environment:
+      - PROMETHEUS_ENDPOINT=http://prometheus:9090/api/v1/write
     restart: unless-stopped
 
   grafana:
@@ -38,6 +60,8 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx
+    labels:
+      - "logging=enabled"
     restart: unless-stopped
 
 volumes:

@@ -4,13 +4,39 @@ loki.write "default" {
   }
 }
 
-discovery.docker "all_containers" {
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+// --- Host Metrics ---
+prometheus.exporter.unix "node" {
+}
+
+prometheus.scrape "host_metrics" {
+  targets    = prometheus.exporter.unix.node.targets
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+// --- Docker Logs (Conditional) ---
+discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
 }
 
-loki.source.docker "all_logs" {
+discovery.relabel "logging_filter" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_label_logging"]
+    regex         = "enabled"
+    action        = "keep"
+  }
+}
+
+loki.source.docker "docker_logs" {
   host       = "unix:///var/run/docker.sock"
-  targets    = discovery.docker.all_containers.targets
+  targets    = discovery.relabel.logging_filter.targets
   forward_to = [loki.process.add_labels.receiver]
 }
 
@@ -23,5 +49,18 @@ loki.process "add_labels" {
     }
   }
 
+  forward_to = [loki.write.default.receiver]
+}
+
+// --- Nginx Logs (Host Path) ---
+local.file_match "nginx" {
+  path_targets = [
+    { "__address__" = "localhost", "__path__" = "/var/log/nginx/access.log", "job" = "nginx-access" },
+    { "__address__" = "localhost", "__path__" = "/var/log/nginx/error.log", "job" = "nginx-error" },
+  ]
+}
+
+loki.source.file "nginx_logs" {
+  targets    = local.file_match.nginx.targets
   forward_to = [loki.write.default.receiver]
 }
