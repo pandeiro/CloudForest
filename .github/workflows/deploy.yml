@@ -1,0 +1,33 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Navigate to the project directory
+            # If the directory doesn't exist, clone it. Otherwise, pull changes.
+            if [ ! -d "~/logging" ]; then
+              git clone https://github.com/${{ github.repository }} ~/logging
+            fi
+            cd ~/logging
+            
+            # Pull the latest changes
+            git pull origin main
+            
+            # Start/Restart the stack
+            docker compose up -d --remove-orphans
