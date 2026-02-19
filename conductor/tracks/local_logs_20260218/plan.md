@@ -24,8 +24,8 @@
 
 ## Phase 4: Final Validation & Documentation
 
-- [ ] Task: Create a basic Grafana dashboard for Docker logs
+- [x] Task: Create a basic Grafana dashboard for Docker logs [ac50b9c]
     - [ ] Build a simple dashboard to query and display logs filtered by container label.
-- [ ] Task: Update README with setup instructions
+- [x] Task: Update README with setup instructions [262c72a]
     - [ ] Document how to start the stack and view logs in Grafana.
-- [ ] Task: Conductor - User Manual Verification 'Final Validation & Documentation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Final Validation & Documentation' (Protocol in workflow.md)
