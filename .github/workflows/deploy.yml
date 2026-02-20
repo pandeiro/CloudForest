@@ -34,13 +34,16 @@ jobs:
             # Fix git safe directory issue
             git config --global --add safe.directory "$DEPLOY_PATH"
             
-            # Fix ownership if needed (for deploy user)
-            if [ -d "$DEPLOY_PATH/.git" ]; then
-              sudo chown -R "$(whoami):$(whoami)" "$DEPLOY_PATH" 2>/dev/null || true
-            fi
+            # Use git fetch + reset instead of pull (avoids some permission issues)
+            # First do a fetch as a workaround for permission issues
+            git fetch origin main 2>/dev/null || {
+              # If fetch fails, try re-cloning
+              rm -rf "$DEPLOY_PATH"
+              git clone https://github.com/${{ github.repository }} "$DEPLOY_PATH"
+              cd "$DEPLOY_PATH"
+              git config --global --add safe.directory "$DEPLOY_PATH"
+            }
             
-            # Pull latest changes
-            git fetch origin main
             git checkout main
             git reset --hard origin/main
             
