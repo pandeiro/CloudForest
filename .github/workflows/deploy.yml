@@ -19,22 +19,47 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            # Set deployment path (default to /opt/cloudforest if not provided)
+            set -euo pipefail
+            
             DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
             if [ -z "$DEPLOY_PATH" ]; then
               DEPLOY_PATH="/opt/cloudforest"
             fi
             
-            # Navigate to the project directory
-            # If the directory doesn't exist, clone it. Otherwise, pull changes.
             if [ ! -d "$DEPLOY_PATH" ]; then
               git clone https://github.com/${{ github.repository }} "$DEPLOY_PATH"
             fi
             cd "$DEPLOY_PATH"
             
-            # Pull the latest changes
-            git pull origin main
+            # Fix git safe directory issue
+            git config --global --add safe.directory "$DEPLOY_PATH"
             
-            # Start/Restart the stack
+            # Pull latest changes
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            
+            # Deploy stack
             export GRAFANA_PASSWORD="${{ secrets.GRAFANA_PASSWORD }}"
             docker compose up -d --remove-orphans
+            
+            # Force recreate grafana to pick up new dashboard configs
+            docker compose up -d --force-recreate grafana
+            
+            # Verify containers are running
+            docker compose ps --format table
+            
+            # Health check - verify grafana is responding
+            echo "Waiting for Grafana to be ready..."
+            for i in {1..30}; do
+              if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health 2>/dev/null | grep -q "200"; then
+                echo "Grafana is ready!"
+                exit 0
+              fi
+              echo "Waiting... ($i/30)"
+              sleep 2
+            done
+            
+            echo "ERROR: Grafana health check failed"
+            docker compose logs grafana
+            exit 1
