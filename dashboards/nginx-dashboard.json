@@ -663,13 +663,13 @@
             "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "topk(10, sum by (path) (count_over_time({job=\"nginx-access\"} | regexp \"(?P<path>/[^\\\\s]*)\" [1h])))",
-          "legendFormat": "{{path}}",
+          "expr": "topk(10, sum by (path_segment) (count_over_time({job=\"nginx-access\"} | regexp \"(?P<path_segment>/[^/]*)\" [10m])))",
+          "legendFormat": "{{path_segment}}",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Top 10 Routes (last 1h)",
+      "title": "Top 10 Path Segments (last 10m)",
       "type": "table"
     },
     {
