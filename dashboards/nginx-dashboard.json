@@ -571,8 +571,8 @@
             "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "sum(rate({job=\"nginx-access\"} |~ \"twitter\\.\"[5m]))",
-          "legendFormat": "twitter.*",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"twitter\"[5m]))",
+          "legendFormat": "twitter",
           "queryType": "range",
           "refId": "A"
         },
@@ -582,8 +582,8 @@
             "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "sum(rate({job=\"nginx-access\"} |~ \"openmoko\\.\"[5m]))",
-          "legendFormat": "openmoko.*",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"openmoko\"[5m]))",
+          "legendFormat": "openmoko",
           "queryType": "range",
           "refId": "B"
         },
@@ -593,8 +593,8 @@
             "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "sum(rate({job=\"nginx-access\"} |~ \"grafana\\.\"[5m]))",
-          "legendFormat": "grafana.*",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"grafana\"[5m]))",
+          "legendFormat": "grafana",
           "queryType": "range",
           "refId": "C"
         }
