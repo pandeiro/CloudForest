@@ -34,6 +34,11 @@ jobs:
             # Fix git safe directory issue
             git config --global --add safe.directory "$DEPLOY_PATH"
             
+            # Fix ownership if needed (for deploy user)
+            if [ -d "$DEPLOY_PATH/.git" ]; then
+              sudo chown -R "$(whoami):$(whoami)" "$DEPLOY_PATH" 2>/dev/null || true
+            fi
+            
             # Pull latest changes
             git fetch origin main
             git checkout main
