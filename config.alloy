@@ -73,5 +73,17 @@ local.file_match "nginx" {
 
 loki.source.file "nginx_logs" {
   targets    = local.file_match.nginx.targets
+  forward_to = [loki.process.nginx_parsing.receiver]
+}
+
+loki.process "nginx_parsing" {
+  stage.regex {
+    expression = "^(?<client_ip>\\S+) - \\S+ \\[(?P<timestamp>[^\\]]+)\\] \"(?P<method>\\S+) (?P<path>\\S+) \\S+\" (?P<status>\\d+) (?P<body_bytes_sent>\\S+)"
+  }
+
+  stage.label_drop {
+    values = ["timestamp", "method", "body_bytes_sent"]
+  }
+
   forward_to = [loki.write.default.receiver]
 }

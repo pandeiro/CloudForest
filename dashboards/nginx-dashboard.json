@@ -342,116 +342,6 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "reqps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 16
-      },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "loki-ds"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate({job=\"nginx-access\"} |~ \"twitter\"[5m]))",
-          "legendFormat": "twitter",
-          "queryType": "range",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "loki-ds"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate({job=\"nginx-access\"} |~ \"openmoko\"[5m]))",
-          "legendFormat": "openmoko",
-          "queryType": "range",
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "loki-ds"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate({job=\"nginx-access\"} |~ \"grafana\"[5m]))",
-          "legendFormat": "grafana",
-          "queryType": "range",
-          "refId": "C"
-        }
-      ],
-      "title": "Subdomain Traffic",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "loki-ds"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
             "mode": "thresholds"
           },
           "custom": {
@@ -480,7 +370,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "client_ip"
+            },
+            "options": {
+              "cellOptions": {
+                "mode": "basic",
+                "type": "text"
+              }
+            }
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -505,7 +408,7 @@
             "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "topk(20, sum by (client_ip) (count_over_time({job=\"nginx-access\"} [1h])))",
+          "expr": "topk(20, sum by (client_ip) (count_over_time({job=\"nginx-access\"}[1h])))",
           "legendFormat": "{{client_ip}}",
           "queryType": "range",
           "refId": "A"
@@ -638,7 +541,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "path"
+            },
+            "options": {
+              "cellOptions": {
+                "mode": "basic",
+                "type": "text"
+              }
+            }
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -663,13 +579,13 @@
             "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "topk(10, sum by (path_segment) (count_over_time({job=\"nginx-access\"} | regexp \"(?P<path_segment>/[^/]*)\" [10m])))",
-          "legendFormat": "{{path_segment}}",
+          "expr": "topk(10, sum by (path) (count_over_time({job=\"nginx-access\"}[10m])))",
+          "legendFormat": "{{path}}",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Top 10 Path Segments (last 10m)",
+      "title": "Top 10 Paths (last 10m)",
       "type": "table"
     },
     {
