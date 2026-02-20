@@ -24,8 +24,8 @@
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-ds"
+        "type": "loki",
+        "uid": "loki-ds"
       },
       "fieldConfig": {
         "defaults": {
@@ -40,7 +40,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
+            "fillOpacity": 20,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -49,7 +49,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "lineWidth": 2,
             "pointSize": 5,
             "showPoints": "auto",
             "spanNulls": false,
@@ -68,14 +68,10 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
-          "unit": "percent"
+          "unit": "reqps"
         },
         "overrides": []
       },
@@ -101,28 +97,57 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus-ds"
+            "type": "loki",
+            "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)",
-          "legendFormat": "CPU Usage",
-          "range": true,
+          "expr": "sum(rate({job=\"nginx-access\"}[5m]))",
+          "legendFormat": "Total Requests/sec",
+          "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "CPU Usage",
+      "title": "Total Requests/sec",
       "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-ds"
+        "type": "loki",
+        "uid": "loki-ds"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
           "mappings": [],
           "thresholds": {
@@ -131,10 +156,14 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "unit": "percent"
+          "unit": "reqps"
         },
         "overrides": []
       },
@@ -160,23 +189,45 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus-ds"
+            "type": "loki",
+            "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - ((node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes))",
-          "legendFormat": "Memory Usage",
-          "range": true,
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"\\\" 2[0-9][0-9] \"[5m]))",
+          "legendFormat": "2xx Success",
+          "queryType": "range",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki-ds"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"\\\" 4[0-9][0-9] \"[5m]))",
+          "legendFormat": "4xx Client Error",
+          "queryType": "range",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki-ds"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"\\\" 5[0-9][0-9] \"[5m]))",
+          "legendFormat": "5xx Server Error",
+          "queryType": "range",
+          "refId": "C"
         }
       ],
-      "title": "Memory Usage",
+      "title": "Status Codes (2xx/4xx/5xx)",
       "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-ds"
+        "type": "loki",
+        "uid": "loki-ds"
       },
       "fieldConfig": {
         "defaults": {
@@ -222,17 +273,17 @@
               }
             ]
           },
-          "unit": "Bps"
+          "unit": "reqps"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 8
       },
-      "id": 3,
+      "id": 5,
       "options": {
         "legend": {
           "calcs": [],
@@ -248,34 +299,45 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus-ds"
+            "type": "loki",
+            "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "rate(node_disk_read_bytes_total[5m])",
-          "legendFormat": "{{device}} - Read",
-          "range": true,
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"/college\"[5m]))",
+          "legendFormat": "/college",
+          "queryType": "range",
           "refId": "A"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus-ds"
+            "type": "loki",
+            "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "rate(node_disk_written_bytes_total[5m])",
-          "legendFormat": "{{device}} - Write",
-          "range": true,
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"/jotter\"[5m]))",
+          "legendFormat": "/jotter",
+          "queryType": "range",
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki-ds"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"/snake\"[5m]))",
+          "legendFormat": "/snake",
+          "queryType": "range",
+          "refId": "C"
         }
       ],
-      "title": "Disk I/O (Read/Write)",
+      "title": "Top-Level Routes (/college, /jotter, /snake)",
       "type": "timeseries"
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus-ds"
+        "type": "loki",
+        "uid": "loki-ds"
       },
       "fieldConfig": {
         "defaults": {
@@ -318,28 +380,20 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 50
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
-          "unit": "percent"
+          "unit": "reqps"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
+        "w": 24,
+        "x": 0,
+        "y": 16
       },
-      "id": 4,
+      "id": 6,
       "options": {
         "legend": {
           "calcs": [],
@@ -355,24 +409,102 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus-ds"
+            "type": "loki",
+            "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "rate(node_disk_io_time_seconds_total[5m]) * 100",
-          "legendFormat": "{{device}} - I/O Util %",
-          "range": true,
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"twitter\\.\"[5m]))",
+          "legendFormat": "twitter.*",
+          "queryType": "range",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki-ds"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"openmoko\\.\"[5m]))",
+          "legendFormat": "openmoko.*",
+          "queryType": "range",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki-ds"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate({job=\"nginx-access\"} |~ \"grafana\\.\"[5m]))",
+          "legendFormat": "grafana.*",
+          "queryType": "range",
+          "refId": "C"
+        }
+      ],
+      "title": "Subdomain Traffic",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "id": 7,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": false,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": false
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki-ds"
+          },
+          "editorMode": "code",
+          "expr": "{job=\"nginx-access\"} | limit 20",
           "refId": "A"
         }
       ],
-      "title": "Disk I/O Utilization %",
-      "type": "timeseries"
+      "title": "Recent Access Logs (sample)",
+      "type": "logs"
     }
   ],
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["host", "metrics"],
+  "tags": ["nginx", "metrics"],
   "templating": {
     "list": []
   },
@@ -382,8 +514,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Host Metrics Dashboard",
-  "uid": "host-metrics",
+  "title": "Nginx Metrics Dashboard",
+  "uid": "nginx-metrics",
   "version": 1,
   "weekStart": ""
 }
