@@ -37,18 +37,27 @@ home = {
   "style": "dark",
   "schemaVersion": 38,
   "refresh": "10s",
+  "annotations": {
+    "list": [
+      {
+        "datasource": {"type": "grafana", "uid": "-- Grafana --"},
+        "enable": True,
+        "iconColor": "purple",
+        "name": "Deploys",
+        "type": "dashboard",
+        "filter": {"ids": [], "exclude": False},
+        "target": {"matchAny": True, "tags": ["deploy"], "type": "tags"}
+      }
+    ]
+  },
   "panels": [
     {
       "title": "Unhealthy Containers",
       "type": "stat",
-      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 5},
+      "gridPos": {"x": 0, "y": 0, "w": 4, "h": 5},
       "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
-      "targets": [{"expr": "count(docker_container_health < 1)", "refId": "A"}],
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto"
-      },
+      "targets": [{"expr": "count(docker_container_health < 1) OR on() vector(0)", "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto"},
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "thresholds"},
@@ -62,83 +71,148 @@ home = {
     {
       "title": "Total Containers",
       "type": "stat",
-      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 5},
+      "gridPos": {"x": 4, "y": 0, "w": 4, "h": 5},
       "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
-      "targets": [{"expr": "count(container_last_seen{id=\"/\"})", "refId": "A"}]
+      "targets": [{"expr": "count(container_last_seen{name!=''})", "refId": "A"}],
+      "options": {"colorMode": "value", "graphMode": "none"}
     },
     {
-      "title": "Host CPU Usage",
-      "type": "gauge",
-      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 5},
-      "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
-      "targets": [{"expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)"}],
-      "fieldConfig": {"defaults": {"min": 0, "max": 100, "unit": "percent"}}
+      "title": "5xx Errors (5m)",
+      "type": "stat",
+      "gridPos": {"x": 8, "y": 0, "w": 4, "h": 5},
+      "datasource": {"type": "loki", "uid": "loki-ds"},
+      "targets": [{"expr": 'sum(count_over_time({job="nginx-access"} |~ "\\\\" 5[0-9][0-9] "[5m]))', "refId": "A"}],
+      "options": {"colorMode": "background", "graphMode": "none"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 1}, {"color": "red", "value": 10}]
+          },
+          "noValue": "0"
+        }
+      }
     },
     {
-      "title": "Host Memory Usage",
+      "title": "Host CPU",
       "type": "gauge",
-      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 5},
+      "gridPos": {"x": 12, "y": 0, "w": 4, "h": 5},
       "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
-      "targets": [{"expr": "100 * (1 - ((node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes))"}],
-      "fieldConfig": {"defaults": {"min": 0, "max": 100, "unit": "percent"}}
+      "targets": [{"expr": '100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)'}],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 100, "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 70}, {"color": "red", "value": 90}]
+          }
+        }
+      }
+    },
+    {
+      "title": "Host Memory",
+      "type": "gauge",
+      "gridPos": {"x": 16, "y": 0, "w": 4, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
+      "targets": [{"expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))"}],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 100, "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 70}, {"color": "red", "value": 90}]
+          }
+        }
+      }
+    },
+    {
+      "title": "Disk Usage",
+      "type": "gauge",
+      "gridPos": {"x": 20, "y": 0, "w": 4, "h": 5},
+      "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
+      "targets": [{"expr": "100 - (node_filesystem_avail_bytes{mountpoint=\"/\", fstype!='tmpfs'} / node_filesystem_size_bytes{mountpoint=\"/\", fstype!='tmpfs'} * 100)"}],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0, "max": 100, "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 70}, {"color": "red", "value": 85}]
+          }
+        }
+      }
+    },
+    {
+      "title": "Nginx Requests/sec",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 5, "w": 12, "h": 7},
+      "datasource": {"type": "loki", "uid": "loki-ds"},
+      "targets": [
+        {"expr": 'sum(rate({job="nginx-access"}[5m]))', "legendFormat": "Total req/s", "refId": "A"},
+        {"expr": 'sum(rate({job="nginx-access"} |~ "\\\\" 5[0-9][0-9] "[5m]))', "legendFormat": "5xx/s", "refId": "B"}
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {"drawStyle": "line", "fillOpacity": 10, "lineInterpolation": "smooth", "lineWidth": 2}
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "5xx/s"},
+            "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "red"}}]
+          }
+        ]
+      }
+    },
+    {
+      "title": "Container CPU Usage",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 5, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
+      "targets": [{"expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=''}[5m]) * 100)", "legendFormat": "{{name}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "percent", "custom": {"drawStyle": "line", "fillOpacity": 5, "lineWidth": 1}}}
+    },
+    {
+      "title": "Container Memory Usage",
+      "type": "timeseries",
+      "gridPos": {"x": 0, "y": 12, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
+      "targets": [{"expr": "sum by (name) (container_memory_usage_bytes{name!=''})", "legendFormat": "{{name}}", "refId": "A"}],
+      "fieldConfig": {"defaults": {"unit": "bytes", "custom": {"drawStyle": "line", "fillOpacity": 5, "lineWidth": 1}}}
+    },
+    {
+      "title": "Disk Space Trend",
+      "type": "timeseries",
+      "gridPos": {"x": 12, "y": 12, "w": 12, "h": 7},
+      "datasource": {"type": "prometheus", "uid": "prometheus-ds"},
+      "targets": [{"expr": "100 - (node_filesystem_avail_bytes{mountpoint=\"/\", fstype!='tmpfs'} / node_filesystem_size_bytes{mountpoint=\"/\", fstype!='tmpfs'} * 100)", "legendFormat": "Disk Used %", "refId": "A"}],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "custom": {"drawStyle": "line", "fillOpacity": 15, "lineWidth": 2},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{"color": "green", "value": None}, {"color": "orange", "value": 70}, {"color": "red", "value": 85}]
+          },
+          "color": {"mode": "thresholds"}
+        }
+      }
     },
     {
       "title": "Recent App Logs",
       "type": "logs",
-      "gridPos": {"x": 0, "y": 5, "w": 24, "h": 10},
+      "gridPos": {"x": 0, "y": 19, "w": 24, "h": 8},
       "datasource": {"type": "loki", "uid": "loki-ds"},
-      "targets": [{"expr": "{job=\"docker\"}"}]
+      "targets": [{"expr": '{job="docker"}'}],
+      "options": {
+        "showTime": True, "showLabels": True, "showCommonLabels": False,
+        "wrapLogMessage": True, "enableLogDetails": True,
+        "sortOrder": "Descending", "dedupStrategy": "none"
+      }
     }
   ]
 }
 
 with open("dashboards/home.json", "w") as f:
     json.dump(home, f, indent=2)
-
-# 3. Create nginx.json
-nginx = {
-  "title": "Nginx Metrics",
-  "uid": "nginx",
-  "style": "dark",
-  "schemaVersion": 38,
-  "refresh": "10s",
-  "panels": [
-    {
-      "title": "Request Rate (per sec)",
-      "type": "timeseries",
-      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
-      "datasource": {"type": "loki", "uid": "loki-ds"},
-      "targets": [{"expr": "sum(rate({job=\"nginx-access\"}[1m]))", "refId": "A"}],
-      "options": {"tooltip": {"mode": "single"}},
-      "fieldConfig": {"defaults": {"custom": {"drawStyle": "line", "fillOpacity": 10, "lineInterpolation": "smooth"}}}
-    },
-    {
-      "title": "Error Rate (per sec)",
-      "type": "timeseries",
-      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
-      "datasource": {"type": "loki", "uid": "loki-ds"},
-      "targets": [{"expr": "sum(rate({job=\"nginx-error\"}[1m]))", "refId": "A"}],
-      "options": {"tooltip": {"mode": "single"}},
-      "fieldConfig": {"defaults": {"custom": {"drawStyle": "line", "fillOpacity": 10, "lineInterpolation": "smooth"}, "color": {"mode": "fixed", "fixedColor": "red"}}}
-    },
-    {
-      "title": "Access Logs",
-      "type": "logs",
-      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 10},
-      "datasource": {"type": "loki", "uid": "loki-ds"},
-      "targets": [{"expr": "{job=\"nginx-access\"}"}]
-    },
-    {
-      "title": "Error Logs",
-      "type": "logs",
-      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 10},
-      "datasource": {"type": "loki", "uid": "loki-ds"},
-      "targets": [{"expr": "{job=\"nginx-error\"}"}]
-    }
-  ]
-}
-
-with open("dashboards/nginx.json", "w") as f:
-    json.dump(nginx, f, indent=2)
 
 print("Dashboards updated successfully")

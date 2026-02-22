@@ -1,0 +1,13 @@
+# Loki runtime data (WAL, compactor state, indexes)
+loki-data/
+
+# Grafana local data
+grafana-data/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db

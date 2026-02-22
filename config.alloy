@@ -93,12 +93,16 @@ loki.source.file "nginx_logs" {
 }
 
 loki.process "nginx_parsing" {
+  // Extract fields from combined log format for use in LogQL filters.
+  // Only client_ip and path are kept as indexed labels.
+  // status is extracted but dropped as a label to avoid high cardinality;
+  // use LogQL filter expressions like: |~ "\" 5[0-9][0-9] "
   stage.regex {
     expression = "^(?<client_ip>\\S+) - \\S+ \\[(?P<timestamp>[^\\]]+)\\] \"(?P<method>\\S+) (?P<path>\\S+) \\S+\" (?P<status>\\d+) (?P<body_bytes_sent>\\S+)"
   }
 
   stage.label_drop {
-    values = ["timestamp", "method", "body_bytes_sent"]
+    values = ["timestamp", "method", "body_bytes_sent", "status"]
   }
 
   forward_to = [loki.write.default.receiver]

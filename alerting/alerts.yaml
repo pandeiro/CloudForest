@@ -1,0 +1,136 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: CloudForest Critical Alerts
+    folder: System
+    interval: 1m
+    rules:
+      - uid: disk-space-critical
+        title: "Disk space > 85%"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: prometheus-ds
+            model:
+              expr: "100 - (node_filesystem_avail_bytes{mountpoint=\"/\", fstype!='tmpfs'} / node_filesystem_size_bytes{mountpoint=\"/\", fstype!='tmpfs'} * 100)"
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 85
+              refId: C
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk usage on root filesystem has exceeded 85%"
+          description: "Current disk usage is {{ $values.B }}%. Investigate and free space before the VPS runs out."
+
+      - uid: container-unhealthy
+        title: "Container unhealthy > 5 minutes"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-ds
+            model:
+              expr: "count(docker_container_health < 1)"
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+              refId: C
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "One or more Docker containers are unhealthy"
+          description: "{{ $values.B }} container(s) have been reporting unhealthy for over 5 minutes. Check docker ps and container logs."
+
+      - uid: nginx-5xx-spike
+        title: "5xx error rate spike"
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki-ds
+            model:
+              expr: "sum(count_over_time({job=\"nginx-access\"} |~ \"\\\\\" 5[0-9][0-9] \"[5m]))"
+              refId: A
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              expression: A
+              reducer: last
+              refId: B
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 10
+              refId: C
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Nginx 5xx error spike detected"
+          description: "{{ $values.B }} server errors in the last 5 minutes. Check nginx error logs and upstream container health."
