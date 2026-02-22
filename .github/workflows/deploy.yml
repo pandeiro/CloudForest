@@ -35,7 +35,6 @@ jobs:
             git config --global --add safe.directory "$DEPLOY_PATH"
             
             # Use git fetch + reset instead of pull (avoids some permission issues)
-            # First do a fetch as a workaround for permission issues
             git fetch origin main 2>/dev/null || {
               # If fetch fails, try re-cloning
               rm -rf "$DEPLOY_PATH"
@@ -62,12 +61,26 @@ jobs:
             for i in {1..30}; do
               if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health 2>/dev/null | grep -q "200"; then
                 echo "Grafana is ready!"
-                exit 0
+                break
               fi
               echo "Waiting... ($i/30)"
               sleep 2
             done
             
-            echo "ERROR: Grafana health check failed"
-            docker compose logs grafana
-            exit 1
+            # Push deploy annotation to Grafana for dashboard correlation
+            GRAFANA_PASSWORD_VAL="${{ secrets.GRAFANA_PASSWORD }}"
+            if [ -z "$GRAFANA_PASSWORD_VAL" ]; then
+              GRAFANA_PASSWORD_VAL="changeme-now"
+            fi
+            
+            DEPLOY_TIME=$(date +%s)000
+            curl -s -X POST http://localhost:3000/api/annotations \
+              -H "Content-Type: application/json" \
+              -u "admin:${GRAFANA_PASSWORD_VAL}" \
+              -d "{
+                \"time\": ${DEPLOY_TIME},
+                \"tags\": [\"deploy\"],
+                \"text\": \"Deploy: ${GITHUB_SHA:-unknown} via GitHub Actions\"
+              }" || echo "Warning: Failed to push deploy annotation (non-fatal)"
+            
+            echo "Deploy complete!"

@@ -7,7 +7,7 @@ services:
       - ./loki-config.yml:/etc/loki/config.yml:ro
       - loki-data:/loki
     ports:
-      - "3100:3100"
+      - "127.0.0.1:3100:3100"
     restart: unless-stopped
 
   prometheus:
@@ -16,13 +16,15 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
       - "--web.console.libraries=/etc/prometheus/console_libraries"
       - "--web.console.templates=/etc/prometheus/console_templates"
       - "--web.enable-remote-write-receiver"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     restart: unless-stopped
 
   alloy:
@@ -38,9 +40,7 @@ services:
       # For Nginx logs
       - /var/log/nginx:/var/log/nginx:ro
     ports:
-      - "12345:12345"
-    environment:
-      - PROMETHEUS_ENDPOINT=http://prometheus:9090/api/v1/write
+      - "127.0.0.1:12345:12345"
     restart: unless-stopped
 
   grafana:
@@ -52,18 +52,20 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-changeme-now}
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/json/home.json
+      - GF_UNIFIED_ALERTING_ENABLED=true
     volumes:
       - grafana-data:/var/lib/grafana
       - ./loki.yaml:/etc/grafana/provisioning/datasources/loki.yaml:ro
       - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
       - ./dashboards:/etc/grafana/provisioning/dashboards/json:ro
+      - ./alerting:/etc/grafana/provisioning/alerting:ro
     restart: unless-stopped
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -78,7 +80,7 @@ services:
     image: fviolence/docker-health-exporter:latest
     container_name: docker-healthcheck
     ports:
-      - "9066:9066"
+      - "127.0.0.1:9066:9066"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
@@ -86,3 +88,4 @@ services:
 volumes:
   loki-data:
   grafana-data:
+  prometheus-data:

@@ -28,12 +28,29 @@ count_over_time({job="docker"}[1m])
 
 ### Memory Usage (Percentage)
 ```promql
-100 * (1 - ((node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes) / node_memory_MemTotal_bytes))
+100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))
 ```
 
 ### Disk Space Usage (Percentage)
 ```promql
-100 * (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}))
+100 - (node_filesystem_avail_bytes{mountpoint="/", fstype!="tmpfs"} / node_filesystem_size_bytes{mountpoint="/", fstype!="tmpfs"} * 100)
+```
+
+## Disk & Capacity
+
+### Root filesystem usage percentage
+```promql
+100 - (node_filesystem_avail_bytes{mountpoint="/", fstype!="tmpfs"} / node_filesystem_size_bytes{mountpoint="/", fstype!="tmpfs"} * 100)
+```
+
+### Per-container memory usage
+```promql
+sum by (name) (container_memory_usage_bytes{name!=""})
+```
+
+### Per-container CPU usage percentage
+```promql
+sum by (name) (rate(container_cpu_usage_seconds_total{name!=""}[5m]) * 100)
 ```
 
 ## Nginx Specifics
@@ -45,5 +62,10 @@ count_over_time({job="docker"}[1m])
 
 ### Filter Nginx logs by status code
 ```logql
-{job="nginx-access"} | json | status >= 400
+{job="nginx-access"} |~ "\" [45][0-9][0-9] "
+```
+
+### Count 5xx errors in last 5 minutes
+```logql
+sum(count_over_time({job="nginx-access"} |~ "\" 5[0-9][0-9] "[5m]))
 ```
