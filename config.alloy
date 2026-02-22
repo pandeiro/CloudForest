@@ -19,6 +19,16 @@ prometheus.scrape "host_metrics" {
   forward_to = [prometheus.remote_write.default.receiver]
 }
 
+prometheus.scrape "cadvisor" {
+  targets = [{"__address__" = "cadvisor:8080"}]
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
+prometheus.scrape "docker_healthcheck" {
+  targets = [{"__address__" = "docker-healthcheck:9066"}]
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
 // --- Docker Logs (Conditional) ---
 discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
@@ -37,6 +47,12 @@ discovery.relabel "docker_filter" {
   rule {
     source_labels = ["__meta_docker_container_image"]
     target_label  = "image"
+  }
+
+  // Extract application/docker-compose project
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    target_label  = "app"
   }
 
   // Filter for logging=enabled

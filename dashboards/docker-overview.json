@@ -51,7 +51,7 @@
             "uid": "loki-ds"
           },
           "editorMode": "code",
-          "expr": "{job=\"docker\", container=~\"$container\"}",
+          "expr": "{job=\"docker\", app=~\"$app\", container=~\"$container\"}",
           "queryType": "range",
           "refId": "A"
         }
@@ -63,9 +63,32 @@
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["docker", "logs"],
+  "tags": [
+    "docker",
+    "logs"
+  ],
   "templating": {
     "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki-ds"
+        },
+        "definition": "label_values(app)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "app",
+        "query": "label_values(app)",
+        "refresh": 1,
+        "type": "query",
+        "sort": 1
+      },
       {
         "current": {
           "selected": true,

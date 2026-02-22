@@ -30,13 +30,23 @@ To scrape logs from a specific file path, update `config.alloy`:
 
 ## Adding New Dashboards
 
-To add a new provisioned dashboard:
+Dashboards are provisioned automatically from the `dashboards/` directory.
 
-1. Create a JSON export of your dashboard from the Grafana UI.
-2. Save it as `dashboards/my-dashboard.json`.
-3. Restart Grafana: `docker compose restart grafana`.
+### Managing Dashboards as Code
 
-Grafana is configured to automatically pick up all JSON files in the `dashboards/` directory.
+To ensure our dashboards are version controlled and reproducible, we heavily manage them via the `generate_dashboards.py` script. This Python script programmatically constructs the JSON structures for our core dashboards (e.g., `home`, `nginx`, and dynamic modifications to `docker-overview`).
+
+**To modify an existing dashboard or add a new one:**
+1. Open `generate_dashboards.py`.
+2. **Modify existing:** Locate its Python dictionary definition (e.g., `home`) and update the panels, Loki/Prometheus queries, or layout grid.
+3. **Add new:** Create a new dictionary structure containing your panels (following the Grafana JSON model) and add a block to write it to `dashboards/<new-dashboard>.json`.
+4. Apply the changes by running the script: `python3 generate_dashboards.py`.
+5. The generated JSON files in `dashboards/` will be automatically picked up by Grafana. (You may need to run `docker-compose restart grafana`).
+
+**Alternative (UI Export):**
+You can also build a new dashboard in the Grafana UI, export the JSON, and either:
+- Save it directly to the `dashboards/` directory for simple provisioning.
+- Incorporate it into `generate_dashboards.py` if you need to dynamically inject things like template variables across environments.
 
 ## Modifying Alloy Config
 

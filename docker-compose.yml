@@ -28,7 +28,7 @@ services:
   alloy:
     image: grafana/alloy:latest
     container_name: alloy
-    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/alloy/config.alloy"]
+    command: [ "run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/alloy/config.alloy" ]
     user: root
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy:ro
@@ -51,11 +51,36 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-changeme-now}
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/json/home.json
     volumes:
       - grafana-data:/var/lib/grafana
       - ./loki.yaml:/etc/grafana/provisioning/datasources/loki.yaml:ro
       - ./dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
       - ./dashboards:/etc/grafana/provisioning/dashboards/json:ro
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
+
+  docker-healthcheck:
+    image: fviolence/docker-health-exporter:latest
+    container_name: docker-healthcheck
+    ports:
+      - "9066:9066"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
 
 volumes:
